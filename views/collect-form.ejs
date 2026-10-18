@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<h1><%= student.name %></h1>
+<p class="muted"><%= student.batch_name || 'No batch' %> · <%= money(student.monthly_fee) %>/month</p>
+<% if (error) { %><p class="alert bad"><%= error %></p><% } %>
+
+<% if (!dues.length) { %>
+  <div class="card"><p>All fees are paid. 🎉</p><a href="/students/<%= student.id %>">View student</a></div>
+<% } else { %>
+<form method="post" class="card form" id="collect">
+  <h2>Select months</h2>
+  <ul class="list">
+    <% dues.forEach((d, i) => { %>
+      <li class="pay-row">
+        <label class="check"><input type="checkbox" class="pick" <%= i === 0 ? 'checked' : '' %>> <%= monthLabel(d.month) %></label>
+        <input type="number" name="pay[d<%= d.id %>]" value="<%= d.balance %>" min="0" max="<%= d.balance %>" inputmode="numeric" class="amt" aria-label="Amount for <%= monthLabel(d.month) %>" <%= i === 0 ? '' : 'disabled' %>>
+      </li>
+    <% }) %>
+  </ul>
+  <fieldset><legend>Payment method</legend>
+    <div class="segmented">
+      <% methods.forEach((m, i) => { %><label><input type="radio" name="method" value="<%= m %>" <%= i === 0 ? 'checked' : '' %>><span><%= m %></span></label><% }) %>
+    </div>
+  </fieldset>
+  <label>Date <input type="date" name="paid_on" value="<%= today %>" required></label>
+  <label>Note (optional) <input name="note" placeholder="e.g. UPI ref no."></label>
+  <button class="btn btn-big" id="submit">Collect <span id="total"></span></button>
+</form>
+<script>
+  const form = document.getElementById('collect');
+  const fmt = n => <%- JSON.stringify(money(0)) %>.replace('0', n.toLocaleString(<%- JSON.stringify(process.env.LOCALE || 'en-IN') %>));
+  function update() {
+    let total = 0;
+    form.querySelectorAll('.pay-row').forEach(row => {
+      const on = row.querySelector('.pick').checked, amt = row.querySelector('.amt');
+      amt.disabled = !on;
+      if (on) total += Number(amt.value) || 0;
+    });
+    document.getElementById('total').textContent = fmt(total);
+    document.getElementById('submit').disabled = total <= 0;
+  }
+  form.addEventListener('input', update);
+  form.addEventListener('submit', () => { document.getElementById('submit').disabled = true; });
+  update();
+</script>
+<% } %>
+<%- include('partials/foot') %>

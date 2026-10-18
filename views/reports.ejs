@@ -1,0 +1,56 @@
+<%- include('partials/head') %>
+<h1>Reports</h1>
+<nav class="tabs">
+  <% [['collections', 'Collections'], ['pending', 'Pending dues'], ['attendance', 'Attendance']].forEach(([key, label]) => { %>
+    <a href="?tab=<%= key %>&from=<%= from %>&to=<%= to %>" class="<%= tab === key ? 'active' : '' %>"><%= label %></a>
+  <% }) %>
+</nav>
+
+<% if (tab !== 'pending') { %>
+<form class="filters">
+  <input type="hidden" name="tab" value="<%= tab %>">
+  <label>From <input type="date" name="from" value="<%= from %>"></label>
+  <label>To <input type="date" name="to" value="<%= to %>"></label>
+  <% if (tab === 'attendance') { %>
+    <select name="batch"><option value="">All batches</option>
+      <% batches.forEach(b => { %><option value="<%= b.id %>" <%= b.id === batch ? 'selected' : '' %>><%= b.name %></option><% }) %></select>
+  <% } %>
+  <button class="btn btn-small">Apply</button>
+</form>
+<% } %>
+
+<% if (tab === 'collections') { %>
+  <div class="tiles">
+    <div class="tile"><span>Total collected</span><b><%= money(total) %></b><small><%= rows.length %> payments</small></div>
+    <% byMethod.forEach(m => { %><div class="tile"><span><%= m.method %></span><b><%= money(m.total) %></b><small><%= m.n %> payments</small></div><% }) %>
+  </div>
+  <p><a href="/reports/collections.csv?from=<%= from %>&to=<%= to %>">Download CSV</a></p>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Date</th><th>Receipt</th><th>Student</th><th>Method</th><th class="num">Amount</th></tr></thead>
+    <tbody>
+      <% if (!rows.length) { %><tr><td colspan="5" class="muted">No payments in this period.</td></tr><% } %>
+      <% rows.forEach(r => { %><tr><td><%= dateLabel(r.paid_on) %></td><td><a href="/receipts/<%= r.id %>"><%= receiptNo(r.id) %></a></td><td><%= r.name %></td><td><%= r.method %></td><td class="num"><%= money(r.total) %></td></tr><% }) %>
+    </tbody>
+  </table></div>
+<% } else if (tab === 'pending') { %>
+  <div class="tiles"><div class="tile"><span>Total pending</span><b><%= money(total) %></b><small><%= rows.length %> students</small></div></div>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Student</th><th>Batch</th><th>Months</th><th class="num">Pending</th><th></th></tr></thead>
+    <tbody>
+      <% if (!rows.length) { %><tr><td colspan="5" class="muted">Nothing pending. 🎉</td></tr><% } %>
+      <% rows.forEach(r => { %><tr><td><a href="/students/<%= r.id %>"><%= r.name %></a></td><td><%= r.batch_name || '—' %></td><td><%= r.months %></td><td class="num"><%= money(r.pending) %></td><td><a href="/collect/<%= r.id %>">Collect</a></td></tr><% }) %>
+    </tbody>
+  </table></div>
+<% } else { %>
+  <div class="card table-wrap"><table>
+    <thead><tr><th>Student</th><th>Batch</th><th class="num">Present</th><th class="num">Days</th><th class="num">%</th></tr></thead>
+    <tbody>
+      <% if (!rows.length) { %><tr><td colspan="5" class="muted">No students.</td></tr><% } %>
+      <% rows.forEach(r => { const pct = r.total ? Math.round(r.present * 100 / r.total) : null; %>
+        <tr><td><a href="/students/<%= r.id %>"><%= r.name %></a></td><td><%= r.batch_name || '—' %></td><td class="num"><%= r.present %></td><td class="num"><%= r.total %></td>
+        <td class="num"><% if (pct === null) { %>—<% } else { %><span class="badge <%= pct < 75 ? 'bad' : 'good' %>"><%= pct %>%</span><% } %></td></tr>
+      <% }) %>
+    </tbody>
+  </table></div>
+<% } %>
+<%- include('partials/foot') %>

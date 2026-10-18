@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+<div class="row-between">
+  <h1><%= student.name %> <% if (!student.active) { %><span class="badge">Inactive</span><% } %></h1>
+  <a href="/students/<%= student.id %>/edit" class="btn btn-ghost">Edit</a>
+</div>
+<p class="muted"><%= student.batch_name || 'No batch' %> · <%= money(student.monthly_fee) %>/month<%= student.phone ? ' · ' + student.phone : '' %><%= student.parent_name ? ' · Parent: ' + student.parent_name : '' %></p>
+
+<div class="tiles">
+  <div class="tile"><span>Pending</span><b><%= money(pending) %></b></div>
+  <div class="tile"><span>Attendance (30 days)</span><b><%= att.total ? Math.round(att.present * 100 / att.total) + '%' : '—' %></b><small><%= att.present %> of <%= att.total %> days</small></div>
+</div>
+<% if (pending > 0) { %><a href="/collect/<%= student.id %>" class="btn btn-big">Collect fee</a><% } %>
+
+<section class="card">
+  <h2>Monthly dues</h2>
+  <% if (!dues.length) { %><p class="muted">No dues yet.</p><% } %>
+  <ul class="list">
+    <% dues.forEach(d => { %>
+      <li class="row-between">
+        <span><%= monthLabel(d.month) %><small><%= money(d.amount) %> due · <%= money(d.amount - d.balance) %> paid</small></span>
+        <span class="row">
+          <% if (d.balance > 0) { %><span class="badge bad"><%= money(d.balance) %></span><% } else { %><span class="badge good">Paid</span><% } %>
+          <details class="adjust"><summary>Adjust</summary>
+            <form method="post" action="/dues/<%= d.id %>" class="row">
+              <input type="number" name="amount" min="<%= d.amount - d.balance %>" value="<%= d.amount %>" inputmode="numeric" aria-label="Amount due for <%= monthLabel(d.month) %>">
+              <button class="btn btn-small">Save</button>
+            </form>
+          </details>
+        </span>
+      </li>
+    <% }) %>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>Payments</h2>
+  <% if (!receipts.length) { %><p class="muted">No payments yet.</p><% } %>
+  <ul class="list">
+    <% receipts.forEach(r => { %>
+      <li><a href="/receipts/<%= r.id %>" class="row-between">
+        <span><%= receiptNo(r.id) %><small><%= dateLabel(r.paid_on) %> · <%= r.method %></small></span>
+        <b><%= money(r.total) %></b></a></li>
+    <% }) %>
+  </ul>
+</section>
+<%- include('partials/foot') %>

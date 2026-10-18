@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> · <%= centerName %></title>
+<link rel="stylesheet" href="/style.css">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg">
+<meta name="theme-color" content="#1d4ed8">
+</head>
+<body>
+<header class="topbar">
+  <a href="/" class="brand"><%= centerName %></a>
+  <nav class="nav">
+    <% [['/', 'Home'], ['/students', 'Students'], ['/collect', 'Collect'], ['/attendance', 'Attendance'], ['/reports', 'Reports']].forEach(([href, label]) => { %>
+      <a href="<%= href %>" class="<%= (href === '/' ? path === '/' : path.startsWith(href)) ? 'active' : '' %><%= href === '/collect' ? ' nav-collect' : '' %>"><%= label %></a>
+    <% }) %>
+  </nav>
+  <a href="/account" class="account">Account</a>
+</header>
+<main>

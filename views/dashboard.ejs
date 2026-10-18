@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<a href="/collect" class="btn btn-big">+ Collect fee</a>
+
+<div class="tiles">
+  <div class="tile"><span>Collected today</span><b><%= money(todayTotal) %></b></div>
+  <div class="tile"><span>This month</span><b><%= money(monthTotal) %></b></div>
+  <a class="tile" href="/reports?tab=pending"><span>Pending dues</span><b><%= money(pendingTotal) %></b><small><%= pendingCount %> student<%= pendingCount === 1 ? '' : 's' %></small></a>
+  <a class="tile" href="/attendance"><span>Attendance today</span>
+    <b><%= att.total ? Math.round(att.present * 100 / att.total) + '%' : '—' %></b>
+    <small><%= att.total ? `${att.present} of ${att.total} present` : 'Not marked yet' %></small></a>
+</div>
+
+<section class="card">
+  <h2>Collections, last 6 months</h2>
+  <% const max = Math.max(1, ...chart.map(c => c.total)) %>
+  <div class="bars" role="img" aria-label="<%= chart.map(c => monthLabel(c.month) + ': ' + money(c.total)).join(', ') %>">
+    <% chart.forEach(c => { %>
+      <div class="bar-col" tabindex="0">
+        <div class="bar-track">
+          <span class="tip"><%= monthLabel(c.month) %><br><b><%= money(c.total) %></b></span>
+          <div class="bar" style="height: <%= c.total ? Math.max(2, c.total / max * 100) : 0 %>%"></div>
+        </div>
+        <span class="bar-label"><%= monthLabel(c.month).split(' ')[0] %></span>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<section class="card">
+  <div class="row-between"><h2>Recent payments</h2><a href="/reports">All</a></div>
+  <% if (!recent.length) { %><p class="muted">No payments yet.</p><% } %>
+  <ul class="list">
+    <% recent.forEach(r => { %>
+      <li><a href="/receipts/<%= r.id %>" class="row-between">
+        <span><%= r.name %><small><%= dateLabel(r.paid_on) %> · <%= r.method %></small></span>
+        <b><%= money(r.total) %></b></a></li>
+    <% }) %>
+  </ul>
+</section>
+<%- include('partials/foot') %>

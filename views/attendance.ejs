@@ -1,0 +1,14 @@
+<%- include('partials/head') %>
+<h1>Attendance</h1>
+<form class="filters"><input type="date" name="date" value="<%= date %>" onchange="this.form.submit()"></form>
+<% if (saved) { %><p class="alert good">Attendance saved.</p><% } %>
+<% if (!batches.length) { %><p class="alert">No batches yet. <a href="/batches">Create one</a>.</p><% } %>
+<ul class="list card">
+  <% batches.forEach(b => { %>
+    <li><a href="/attendance/<%= b.id %>?date=<%= date %>" class="row-between">
+      <span><%= b.name %><small><%= b.timing || '' %> · <%= b.students %> students</small></span>
+      <% if (b.marked) { %><span class="badge good"><%= b.present %>/<%= b.marked %> present</span><% } else { %><span class="badge">Not marked</span><% } %>
+    </a></li>
+  <% }) %>
+</ul>
+<%- include('partials/foot') %>

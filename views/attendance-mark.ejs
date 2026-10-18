@@ -1,0 +1,23 @@
+<%- include('partials/head') %>
+<h1><%= batch.name %></h1>
+<p class="muted"><%= dateLabel(date) %> · Tap a student to mark absent<%= isMarked ? ' · already marked, editing' : '' %></p>
+<% if (!students.length) { %><p class="alert">No students in this batch. <a href="/students/new?batch=<%= batch.id %>">Add one</a>.</p><% } else { %>
+<form method="post" id="att">
+  <input type="hidden" name="date" value="<%= date %>">
+  <div class="row"><button type="button" class="btn btn-small btn-ghost" data-all="1">All present</button><button type="button" class="btn btn-small btn-ghost" data-all="0">All absent</button><span class="muted" id="count"></span></div>
+  <div class="att-list">
+    <% students.forEach(s => { %>
+      <label class="att"><input type="checkbox" name="present" value="<%= s.id %>" <%= s.present === 0 ? '' : 'checked' %>><span><%= s.name %></span><em></em></label>
+    <% }) %>
+  </div>
+  <button class="btn btn-big">Save attendance</button>
+</form>
+<script>
+  const form = document.getElementById('att'), boxes = [...form.querySelectorAll('input[name=present]')];
+  const count = () => { document.getElementById('count').textContent = boxes.filter(b => b.checked).length + ' / ' + boxes.length + ' present'; };
+  form.querySelectorAll('[data-all]').forEach(btn => btn.onclick = () => { boxes.forEach(b => b.checked = btn.dataset.all === '1'); count(); });
+  form.addEventListener('change', count);
+  count();
+</script>
+<% } %>
+<%- include('partials/foot') %>

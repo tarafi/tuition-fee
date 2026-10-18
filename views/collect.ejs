@@ -1,0 +1,15 @@
+<%- include('partials/head') %>
+<h1>Collect fee</h1>
+<form class="filters">
+  <input type="search" name="q" value="<%= q %>" placeholder="Search student name or phone" autofocus>
+</form>
+<ul class="list card">
+  <% if (!students.length) { %><li class="muted">No students found.</li><% } %>
+  <% students.forEach(s => { %>
+    <li><a href="/collect/<%= s.id %>" class="row-between">
+      <span><%= s.name %><small><%= s.batch_name || 'No batch' %><%= s.phone ? ' · ' + s.phone : '' %></small></span>
+      <% if (s.pending > 0) { %><span class="badge bad"><%= money(s.pending) %></span><% } else { %><span class="badge good">Paid</span><% } %>
+    </a></li>
+  <% }) %>
+</ul>
+<%- include('partials/foot') %>

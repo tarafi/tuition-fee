@@ -1,0 +1,21 @@
+<%- include('partials/head') %>
+<h1><%= title %></h1>
+<form method="post" action="/students<%= student.id ? '/' + student.id : '' %>" class="card form">
+  <label>Name <input name="name" value="<%= student.name || '' %>" required autofocus></label>
+  <label>Phone (with country code for WhatsApp) <input name="phone" type="tel" value="<%= student.phone || '' %>"></label>
+  <label>Parent name <input name="parent_name" value="<%= student.parent_name || '' %>"></label>
+  <label>Batch
+    <select name="batch_id">
+      <option value="">— None —</option>
+      <% batches.forEach(b => { %><option value="<%= b.id %>" <%= b.id === student.batch_id ? 'selected' : '' %>><%= b.name %><%= b.timing ? ' (' + b.timing + ')' : '' %></option><% }) %>
+    </select>
+  </label>
+  <label>Monthly fee <input name="monthly_fee" type="number" min="0" step="1" inputmode="numeric" value="<%= student.monthly_fee ?? '' %>" required></label>
+  <label>Joining date <input name="join_date" type="date" value="<%= student.join_date %>" required>
+    <% if (!student.id) { %><small class="muted">Fees are due for every month from the joining month.</small><% } %></label>
+  <% if (student.id) { %>
+    <label class="check"><input type="checkbox" name="active" value="1" <%= student.active ? 'checked' : '' %>> Active (untick when the student leaves)</label>
+  <% } %>
+  <button class="btn">Save</button>
+</form>
+<%- include('partials/foot') %>

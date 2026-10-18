@@ -1,0 +1,25 @@
+<%- include('partials/head') %>
+<%
+  const lines = items.map(i => `${monthLabel(i.month)}: ${money(i.amount)}`);
+  const msg = `${centerName}\nReceipt ${receiptNo(receipt.id)}\nStudent: ${receipt.name}\nDate: ${dateLabel(receipt.paid_on)}\n${lines.join('\n')}\nTotal paid: ${money(receipt.total)} (${receipt.method})` + (pending > 0 ? `\nBalance due: ${money(pending)}` : '') + `\nThank you!`;
+  const phone = (receipt.phone || '').replace(/\D/g, '');
+%>
+<div class="card receipt">
+  <div class="row-between"><h2><%= centerName %></h2><span class="muted"><%= receiptNo(receipt.id) %></span></div>
+  <p><b><%= receipt.name %></b><br><span class="muted"><%= dateLabel(receipt.paid_on) %> · <%= receipt.method %></span></p>
+  <ul class="list">
+    <% items.forEach(i => { %><li class="row-between"><span><%= monthLabel(i.month) %></span><span><%= money(i.amount) %></span></li><% }) %>
+    <li class="row-between total"><span>Total paid</span><b><%= money(receipt.total) %></b></li>
+  </ul>
+  <% if (receipt.note) { %><p class="muted">Note: <%= receipt.note %></p><% } %>
+  <% if (pending > 0) { %><p>Balance due: <b><%= money(pending) %></b></p><% } %>
+</div>
+<div class="actions no-print">
+  <a class="btn" href="https://wa.me/<%= phone %>?text=<%= encodeURIComponent(msg) %>" target="_blank" rel="noopener">Share on WhatsApp</a>
+  <button class="btn btn-ghost" onclick="print()">Print</button>
+  <a class="btn btn-ghost" href="/collect">Collect another</a>
+</div>
+<form method="post" action="/receipts/<%= receipt.id %>/delete" class="no-print" onsubmit="return confirm('Delete this receipt? The months will show as unpaid again.')">
+  <button class="link danger">Delete receipt</button>
+</form>
+<%- include('partials/foot') %>

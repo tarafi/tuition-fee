@@ -1,0 +1,9 @@
+{
+  "name": "Tuition Manager",
+  "short_name": "Tuition",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#1d4ed8",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

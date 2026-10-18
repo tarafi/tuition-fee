@@ -1,0 +1,21 @@
+<%- include('partials/head') %>
+<div class="row-between"><h1>Students</h1><a href="/students/new" class="btn">+ Add</a></div>
+<form class="filters">
+  <input type="search" name="q" value="<%= q %>" placeholder="Search name or phone">
+  <select name="batch" onchange="this.form.submit()">
+    <option value="">All batches</option>
+    <% batches.forEach(b => { %><option value="<%= b.id %>" <%= b.id === batch ? 'selected' : '' %>><%= b.name %></option><% }) %>
+  </select>
+  <label class="check"><input type="checkbox" name="inactive" value="1" <%= inactive ? 'checked' : '' %> onchange="this.form.submit()"> Inactive</label>
+</form>
+<% if (!batches.length) { %><p class="alert">Start by <a href="/batches">creating a batch</a>, then add students to it.</p><% } %>
+<ul class="list card">
+  <% if (!students.length) { %><li class="muted">No students found.</li><% } %>
+  <% students.forEach(s => { %>
+    <li><a href="/students/<%= s.id %>" class="row-between">
+      <span><%= s.name %><small><%= s.batch_name || 'No batch' %><%= s.phone ? ' · ' + s.phone : '' %></small></span>
+      <% if (s.pending > 0) { %><span class="badge bad"><%= money(s.pending) %> due</span><% } else { %><span class="badge good">Paid</span><% } %>
+    </a></li>
+  <% }) %>
+</ul>
+<%- include('partials/foot') %>

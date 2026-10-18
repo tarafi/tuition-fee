@@ -1,0 +1,18 @@
+<%- include('partials/head') %>
+<h1>Batches</h1>
+<form method="post" action="/batches" class="card form">
+  <h2>New batch</h2>
+  <label>Name <input name="name" placeholder="e.g. Grade 10 Maths" required></label>
+  <label>Timing <input name="timing" placeholder="e.g. Mon–Fri 5–6 PM"></label>
+  <button class="btn">Add batch</button>
+</form>
+<% batches.forEach(b => { %>
+  <form method="post" action="/batches/<%= b.id %>" class="card form">
+    <div class="row-between"><b><%= b.name %></b><a href="/students?batch=<%= b.id %>"><%= b.students %> students</a></div>
+    <label>Name <input name="name" value="<%= b.name %>" required></label>
+    <label>Timing <input name="timing" value="<%= b.timing || '' %>"></label>
+    <label class="check"><input type="checkbox" name="active" value="1" <%= b.active ? 'checked' : '' %>> Active</label>
+    <button class="btn btn-ghost">Save</button>
+  </form>
+<% }) %>
+<%- include('partials/foot') %>

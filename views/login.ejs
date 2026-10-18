@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login · <%= centerName %></title>
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="/icon.svg">
+</head>
+<body class="center-page">
+<form method="post" action="/login" class="card login">
+  <h1><%= centerName %></h1>
+  <% if (error) { %><p class="alert bad"><%= error %></p><% } %>
+  <label>Username <input name="username" value="admin" autocomplete="username" required></label>
+  <label>Password <input name="password" type="password" autocomplete="current-password" required autofocus></label>
+  <button class="btn">Log in</button>
+</form>
+</body>
+</html>
